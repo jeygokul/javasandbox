@@ -106,6 +106,3 @@ class Node {
 
 }
 
-enum Orientation {
-	LEFT, RIGHT
-}
