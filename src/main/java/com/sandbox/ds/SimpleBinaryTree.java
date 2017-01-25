@@ -64,8 +64,6 @@ class Node {
 	public void setRightNode(Node rightNode) {
 		this.rightNode = rightNode;
 	}
-
-	
 	
 	@Override
 	public int hashCode() {
