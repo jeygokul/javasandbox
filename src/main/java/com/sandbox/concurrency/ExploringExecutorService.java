@@ -13,6 +13,7 @@ public class ExploringExecutorService {
 		ExecutorService executorService = null;
 		Runnable task1 = null;
 		Runnable task2 = null;
+		Runnable task3 = null;
 
 		try {
 			executorService = Executors.newFixedThreadPool(2);
@@ -32,9 +33,20 @@ public class ExploringExecutorService {
 						+ Calendar.getInstance(TimeZone.getTimeZone("Asia/Singapore")).getTime());
 			};
 
+			task3 = () -> {
+				try {
+					TimeUnit.MINUTES.sleep(3);
+				} catch (InterruptedException e) {
+					System.err.println(Thread.currentThread().getName() + "was interrupted ");
+				}
+				System.out.println("Time now : [ " + Thread.currentThread().getName() + " ]"
+						+ Calendar.getInstance(TimeZone.getTimeZone("Asia/Singapore")).getTime());
+			};
+			
 			executorService.submit(task1);
 			executorService.submit(task2);
-
+			executorService.submit(task3);
+			
 			executorService.shutdown();
 			// Wait for 5 minutes and then terminate, but our task2 should
 			// complete before it
