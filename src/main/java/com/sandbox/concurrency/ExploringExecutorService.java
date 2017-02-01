@@ -10,13 +10,16 @@ public class ExploringExecutorService {
 
 	public static void main(String[] args) {
 
-		ExecutorService executorService = null;
+		ExecutorService executorWithFixedThreadPoolService = null;
+		ExecutorService executorWithCachedThreadPoolService = null;
 		Runnable task1 = null;
 		Runnable task2 = null;
 		Runnable task3 = null;
 
 		try {
-			executorService = Executors.newFixedThreadPool(2);
+			executorWithFixedThreadPoolService = Executors.newFixedThreadPool(2);
+			executorWithCachedThreadPoolService = Executors.newCachedThreadPool();
+			
 
 			task1 = () -> {
 				System.out.println("Time now : [ " + Thread.currentThread().getName() + " ]"
@@ -43,25 +46,34 @@ public class ExploringExecutorService {
 						+ Calendar.getInstance(TimeZone.getTimeZone("Asia/Singapore")).getTime());
 			};
 			
-			executorService.submit(task1);
-			executorService.submit(task2);
-			executorService.submit(task3);
+			//Execute with thread pool
+			executorWithFixedThreadPoolService.submit(task1);
+			executorWithFixedThreadPoolService.submit(task2);
+			executorWithFixedThreadPoolService.submit(task3);
 			
-			executorService.shutdown();
+			//Now submit to cached thread pool
+			executorWithCachedThreadPoolService.submit(task1);
+			executorWithCachedThreadPoolService.submit(task2);
+			executorWithCachedThreadPoolService.submit(task3);
+			
+			executorWithFixedThreadPoolService.shutdown();
+			executorWithCachedThreadPoolService.shutdown();
 			// Wait for 5 minutes and then terminate, but our task2 should
 			// complete before it
-			executorService.awaitTermination(5, TimeUnit.MINUTES);
+			executorWithFixedThreadPoolService.awaitTermination(5, TimeUnit.MINUTES);
+			executorWithCachedThreadPoolService.awaitTermination(5, TimeUnit.MINUTES);
 
 		} catch (InterruptedException e) {
 			System.err.println("One or more of the tasks has been interrupted");
 		} finally {
-			if (!executorService.isTerminated()) {
+			if (!executorWithFixedThreadPoolService.isTerminated()) {
 				System.err.println("Rollback or cancel tasks here");
 			}
 			//The shutdown() before this will shut down the executor, the below statement is of no use
 			//But its here to understand the concepts
 			//This will only get executed if our task2 runs more than 5 minutes as per the code
-			executorService.shutdownNow();
+			executorWithFixedThreadPoolService.shutdownNow();
+			executorWithCachedThreadPoolService.shutdownNow();
 			System.out.println("Forceful shutdown completed");
 		}
 	}
